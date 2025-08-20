@@ -1,5 +1,5 @@
 """
-Bagpipe - A Python DSL for processor pipeline visualization.
+Bagpipe - A Python library for processor pipeline visualization.
 
 This package provides a domain-specific language for describing and visualizing
 processor pipeline diagrams using matplotlib.

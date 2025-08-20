@@ -1,7 +1,7 @@
 """
 Unit tests for the Bagpipe library.
 """
-from bagpipe.models import Op, Node, Pipeline, Edge, Chain
+from bagpipe.models import Op, Node, Pipeline, Edge
 
 
 class TestOp:

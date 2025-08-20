@@ -8,32 +8,6 @@ Pipeline, Op, Node, and Chain.
 from typing import List
 
 
-class Pipeline:
-    def __init__(self):
-        self.instructions = []
-        self.edges = []
-
-    def __add__(self, other):
-        if isinstance(other, Op):
-            self.instructions.append(other)
-        elif isinstance(other, Edge):
-            self.edges.append(other)
-        else:
-            raise TypeError(f"Adding invalid type: {type(other)}")
-        return self
-
-    def add_op(self, op: Op):
-        self.instructions.append(op)
-        return self
-
-    def add_edge(self, edge: Edge):
-        self.edges.append(edge)
-        return self
-
-    def draw(self):
-        pass
-
-
 class Node:
     def __init__(self, label: str, cycle: int, color: str = "white"):
         self.label = label
@@ -44,7 +18,7 @@ class Node:
         return f"{self.label}@{self.cycle}"
 
     def __rshift__(self, other):
-        """Support for '->' syntax: node1 >> node2 creates an edge"""
+        """Support for '>>' syntax: node1 >> node2 creates a chain"""
         if isinstance(other, Chain):
             print(f"chaining node {self} with edge {other}")
             edge = Chain([self] + other.nodes)
@@ -70,19 +44,17 @@ class Op:
         self.nodes = {}
 
     def __getattr__(self, label):
-        # If the node already exists, return it
         if label in self.nodes:
             return self.nodes[label]
         else:
-            # If the node doesn't exist, create it
-            # We need to return a callable that can create the node with arguments
-            def create_node(*args):
-                if len(args) != 1:
-                    raise ValueError(f"Node creation requires exactly one argument (cycle), got {len(args)}")
-                node = Node(label, args[0])
-                self.nodes[label] = node
-                return node
-            return create_node
+            return lambda *args: self.create_node(label, *args)
+
+    def create_node(self, label, *args):
+        if label in self.nodes:
+            raise ValueError(f"Node {label} already exists")
+        node = Node(label, *args)
+        self.nodes[label] = node
+        return node
 
     def add_node(self, node: Node):
         self.nodes[node.label] = node
@@ -130,4 +102,31 @@ class Edge:
                 self.legend == other.legend)
 
     def __repr__(self):
-        return f"Edge(deps={self.deps}, color={self.color}, legend={self.legend})"
+        return f"Edge(deps={self.deps}, color={self.color}, " \
+               f"legend={self.legend})"
+
+
+class Pipeline:
+    def __init__(self):
+        self.instructions = []
+        self.edges = []
+
+    def __add__(self, other):
+        if isinstance(other, Op):
+            self.instructions.append(other)
+        elif isinstance(other, Edge):
+            self.edges.append(other)
+        else:
+            raise TypeError(f"Adding invalid type: {type(other)}")
+        return self
+
+    def add_op(self, op: Op):
+        self.instructions.append(op)
+        return self
+
+    def add_edge(self, edge: Edge):
+        self.edges.append(edge)
+        return self
+
+    def draw(self):
+        pass
