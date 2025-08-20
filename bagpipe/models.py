@@ -1,5 +1,5 @@
 """
-Core model classes for the Bagpipe DSL.
+Core model classes for the Bagpipe library.
 
 This module contains the main classes that users interact with:
 Pipeline, Op, Node, and Chain.

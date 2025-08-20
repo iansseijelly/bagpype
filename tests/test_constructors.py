@@ -1,5 +1,5 @@
 """
-Unit tests for the Bagpipe DSL.
+Unit tests for the Bagpipe library.
 """
 from bagpipe.models import Op, Node, Pipeline, Edge, Chain
 

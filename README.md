@@ -1,6 +1,6 @@
 # Bagpipe: Better Analysis Graph for Processor Pipelines
 
-This repo implements a python-embedded DSL for describing and visualizing processor pipeline diagrams. 
+This repo implements a python library for describing and visualizing processor pipeline diagrams. 
 
 ## Components
 
