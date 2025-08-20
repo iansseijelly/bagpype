@@ -64,12 +64,12 @@ class TestEdge:
         p = Pipeline()
         i0 = Op("add x1, x2, x3")
         i1 = Op("orr x4, x5, x6")
-        p += i0
-        p += i1
+        p.add_op(i0)
+        p.add_op(i1)
         i0.add_node(Node("d", 1))
         i1.add_node(Node("d", 2))
         i1.add_node(Node("c", 3))
-        p += Edge([i0.d, i1.d, i1.c], "red")
+        p.add_edge(Edge([i0.d, i1.d, i1.c], "red"))
         assert p.edges == [Edge(i0.d >> i1.d >> i1.c, "red")]
         assert p.instructions == [i0, i1]
         p.draw()

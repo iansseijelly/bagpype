@@ -22,6 +22,14 @@ class Pipeline:
             raise TypeError(f"Adding invalid type: {type(other)}")
         return self
 
+    def add_op(self, op: Op):
+        self.instructions.append(op)
+        return self
+
+    def add_edge(self, edge: Edge):
+        self.edges.append(edge)
+        return self
+
     def draw(self):
         pass
 
