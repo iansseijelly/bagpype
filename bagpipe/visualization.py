@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import Tuple, Optional, List
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bagpipe.models import Node
 
 
 @dataclass
@@ -17,6 +16,10 @@ class VisualConfig:
     style: str = "whitegrid"
     routing: str = "orthogonal"
     filename: Optional[str] = None
+    font_size: int = 16
+    font_family: str = "DejaVu Sans Mono"
+    y_label_font_size: int = 12
+    x_label_font_size: int = 16
 
 
 class PipelineRenderer:
@@ -31,22 +34,24 @@ class PipelineRenderer:
         self.parent_pipeline = None  # to be set by the pipeline
         self.config = config
         self.vis_nodes_x: List[int] = []
-        self.vis_nodes_y: List[int] = []
-        self.vis_nodes_list: List[Node] = []
-        self.vis_edges: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
 
     def prep_plt(self):
         """Prepare the matplotlib figure and axes."""
         sns.set_style(self.config.style)
-        plt.rcParams['font.family'] = 'DejaVu Sans Mono'
-        plt.rcParams['font.size'] = 16
+        plt.rcParams['font.family'] = self.config.font_family
+        plt.rcParams['font.size'] = self.config.font_size
 
     def draw_pipeline(self):
         """Draw the pipeline."""
         fig, ax = plt.subplots(figsize=self.config.figsize)
-        for i, node in enumerate(self.vis_nodes_list):
-            ax.scatter(self.vis_nodes_x[i], self.vis_nodes_y[i], marker="s", s=2400, color="white", edgecolors="black")
-            ax.text(self.vis_nodes_x[i], self.vis_nodes_y[i], node.label, ha="center", va="center")
+        total_ops = len(self.parent_pipeline.ops)
+        for i, op in enumerate(self.parent_pipeline.ops):
+            for k, v in op.nodes.items():
+                x = v.time
+                y = total_ops - i
+                ax.scatter(x, y, marker="s", s=2400, color="white", edgecolors="black")
+                ax.text(x, y, k, ha="center", va="center")
+                self.vis_nodes_x.append(x)
 
         # prepare y-ticks
         total_ops = len(self.parent_pipeline.ops)
@@ -56,9 +61,9 @@ class PipelineRenderer:
         ax.set_yticklabels([])
 
         # add y-labels in the middle of the y-ticks
-        # find the longest label
         for i in range(total_ops):
-            ax.text(0.3, y_ticks[i]-0.5, f"Op{i} - {self.parent_pipeline.ops[i].label}", ha="right", va="center")
+            ax.text(0.4, y_ticks[i]-0.5, f"Op{i} - {self.parent_pipeline.ops[i].label}",
+                    ha="right", va="center", fontsize=self.config.y_label_font_size)
 
         # prepare x-ticks
         min_time = min(self.vis_nodes_x)
