@@ -13,6 +13,7 @@ class Node:
         self.label = label
         self.time = time
         self.color = color
+        # parent op is set and maintained by the Op class
 
     def __repr__(self):
         return f"{self.label}@{self.time}"
@@ -33,7 +34,8 @@ class Node:
             return False
         return (self.label == other.label and
                 self.time == other.time and
-                self.color == other.color)
+                self.color == other.color and
+                self.parent_op == other.parent_op)
 
 
 class Op:
@@ -52,10 +54,12 @@ class Op:
             raise ValueError(f"Node {label} already exists")
         node = Node(label, *args)
         self.nodes[label] = node
+        node.parent_op = self
         return node
 
     def add_node(self, node: Node):
         self.nodes[node.label] = node
+        node.parent_op = self
         return self
 
 
@@ -65,14 +69,13 @@ class NodeList:
         self.nodes = nodes
 
     def __rshift__(self, other):
-        """Support for '->' syntax: node1 >> node2 creates an edge"""
+        """Support for '>>' syntax: node1 >> node2 creates an nodelist"""
         if isinstance(other, NodeList):
             edge = NodeList(self.nodes + other.nodes)
         elif isinstance(other, Node):
             edge = NodeList(self.nodes + [other])
         else:
             raise TypeError(f"NodeListing edges with invalid type: {type(other)}")
-
         return edge
 
     def __eq__(self, other):

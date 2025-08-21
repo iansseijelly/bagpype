@@ -37,3 +37,9 @@ class Pipeline:
     def draw(self):
         self.renderer.prep_plt()
         self.renderer.draw_pipeline()
+
+    def get_idx_by_op(self, op: Op) -> int:
+        return self.ops.index(op)
+
+    def get_op_by_idx(self, idx: int) -> Op:
+        return self.ops[idx]
