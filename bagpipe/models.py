@@ -9,21 +9,19 @@ from typing import List
 
 
 class Node:
-    def __init__(self, label: str, cycle: int, color: str = "white"):
+    def __init__(self, label: str, time: int, color: str = "white"):
         self.label = label
-        self.cycle = cycle
+        self.time = time
         self.color = color
 
     def __repr__(self):
-        return f"{self.label}@{self.cycle}"
+        return f"{self.label}@{self.time}"
 
     def __rshift__(self, other):
         """Support for '>>' syntax: node1 >> node2 creates a chain"""
         if isinstance(other, NodeList):
-            print(f"chaining node {self} with edge {other}")
             edge = NodeList([self] + other.nodes)
         elif isinstance(other, Node):
-            print(f"chaining node {self} with node {other}")
             edge = NodeList([self, other])
         else:
             raise TypeError(f"Connecting nodes with invalid type: {type(other)}")
@@ -34,13 +32,13 @@ class Node:
         if not isinstance(other, Node):
             return False
         return (self.label == other.label and
-                self.cycle == other.cycle and
+                self.time == other.time and
                 self.color == other.color)
 
 
 class Op:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, label):
+        self.label = label
         self.nodes = {}
 
     def __getattr__(self, label):
@@ -69,10 +67,8 @@ class NodeList:
     def __rshift__(self, other):
         """Support for '->' syntax: node1 >> node2 creates an edge"""
         if isinstance(other, NodeList):
-            print(f"chaining edge {self} with edge {other}")
             edge = NodeList(self.nodes + other.nodes)
         elif isinstance(other, Node):
-            print(f"chaining edge {self} with node {other}")
             edge = NodeList(self.nodes + [other])
         else:
             raise TypeError(f"NodeListing edges with invalid type: {type(other)}")

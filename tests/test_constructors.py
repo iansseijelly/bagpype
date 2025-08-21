@@ -20,20 +20,20 @@ class TestNode:
 
     def test_node_creation(self):
         """Test creating a node."""
-        node = Node("test", "cycle")
+        node = Node("test", "time")
         assert node.label == "test"
-        assert node.cycle == "cycle"
+        assert node.time == "time"
 
     def test_node_creation_in_instruction(self):
         """Test creating a node in an instruction."""
         i0 = Op("test")
         node = i0.d(1)
         assert node.label == "d"
-        assert node.cycle == 1
+        assert node.time == 1
         assert i0.nodes == {"d": node}
         node2 = i0.e(2)
         assert node2.label == "e"
-        assert node2.cycle == 2
+        assert node2.time == 2
         assert i0.nodes == {"d": node, "e": node2}
 
 
