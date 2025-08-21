@@ -7,19 +7,21 @@ This module contains the matplotlib-based renderer and export functionality.
 from dataclasses import dataclass
 from typing import Tuple, Optional, List
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch
+from matplotlib.path import Path
 import seaborn as sns
 
 from bagpipe.models import Node
 
 
 @dataclass
-class VisualConfig:
+class RenderConfig:
     figsize: Tuple[float, float] = (12, 8)
     style: str = "whitegrid"
-    routing: str = "orthogonal"
+    routing: str = "curved"
     filename: Optional[str] = None
     font_size: int = 16
-    font_family: str = "DejaVu Sans Mono"
+    font_family: str = "DejaVu Sans"
     y_label_font_size: int = 12
     x_label_font_size: int = 16
     edge_center_offset: float = 0
@@ -28,7 +30,7 @@ class VisualConfig:
 class PipelineRenderer:
     """Renders pipeline diagrams with intelligent edge routing and professional styling."""
 
-    def __init__(self, config: VisualConfig = VisualConfig()):
+    def __init__(self, config: RenderConfig = RenderConfig()):
         """Initialize renderer with a pipeline instance.
 
         Args:
@@ -52,12 +54,15 @@ class PipelineRenderer:
         """Draw the pipeline."""
         fig, ax = plt.subplots(figsize=self.config.figsize)
         total_ops = len(self.parent_pipeline.ops)
+
+        # plot the nodes
         for i, op in enumerate(self.parent_pipeline.ops):
             for k, v in op.nodes.items():
                 x = v.time
                 y = total_ops - i
-                ax.scatter(x, y, marker="s", s=2400, color=v.color, edgecolors="black")
-                ax.text(x, y, k, ha="center", va="center")
+                ax.scatter(x, y, marker="s", s=2400, color=v.color,
+                           edgecolors="black", alpha=0.6, linewidths=1.5)
+                ax.text(x, y, k, ha="center", va="center", fontweight="bold")
                 self.vis_nodes_x.append(x)
 
         # prepare y-ticks
@@ -69,7 +74,7 @@ class PipelineRenderer:
 
         # add y-labels in the middle of the y-ticks
         for i in range(total_ops):
-            ax.text(0.4, y_ticks[i]-0.5, f"Op{i} - {self.parent_pipeline.ops[i].label}",
+            ax.text(-0.6, y_ticks[i]-0.5, f"op{i} - {self.parent_pipeline.ops[i].label}",
                     ha="right", va="center", fontsize=self.config.y_label_font_size)
 
         # prepare x-ticks
@@ -86,17 +91,45 @@ class PipelineRenderer:
 
         # draw edges
         for edge in self.parent_pipeline.edges:
-            for i in range(len(edge.deps.nodes) - 1):
-                plt.arrow(x=edge.deps.nodes[i].time + self.config.edge_center_offset,
-                          y=self.get_y_from_node(edge.deps.nodes[i]) - self.config.edge_center_offset,
-                          dx=edge.deps.nodes[i+1].time - edge.deps.nodes[i].time - 2 * self.config.edge_center_offset,
-                          dy=self.get_y_from_node(edge.deps.nodes[i+1]) - self.get_y_from_node(edge.deps.nodes[i])
-                          - 2 * self.config.edge_center_offset,
-                          head_width=0.05,
-                          head_length=0.03,
-                          width=0.01,
-                          alpha=0.5,
-                          fc=edge.color, ec=edge.color)
+            deps = edge.deps.nodes
+            for i in range(len(deps) - 1):
+                n1 = deps[i]
+                n2 = deps[i + 1]
+
+                sx = n1.time + self.config.edge_center_offset
+                sy = self.get_y_from_node(n1) - self.config.edge_center_offset
+                tx = n2.time - self.config.edge_center_offset
+                ty = self.get_y_from_node(n2) - self.config.edge_center_offset
+
+                # orthogonal edges
+                if self.config.routing == "orthogonal":
+                    verts = [(sx, sy), (tx, sy), (tx, ty)]
+                    codes = [Path.MOVETO, Path.LINETO, Path.LINETO]
+                    path = Path(verts, codes)
+                    arrow = FancyArrowPatch(
+                        path=path,
+                        arrowstyle="-|>",
+                        color=edge.color,
+                        alpha=0.5,
+                        lw=2,
+                        mutation_scale=14,
+                    )
+                # curved edges
+                elif self.config.routing == "curved":
+                    arrow = FancyArrowPatch(
+                        (sx, sy),
+                        (tx, ty),
+                        arrowstyle="->",
+                        color=edge.color,
+                        alpha=0.5,
+                        lw=2,
+                        mutation_scale=14,
+                        connectionstyle="arc3,rad=0.15",
+                    )
+                else:
+                    raise ValueError(f"Invalid routing type: {self.config.routing}")
+
+                ax.add_patch(arrow)
 
         plt.tight_layout()
         plt.show()

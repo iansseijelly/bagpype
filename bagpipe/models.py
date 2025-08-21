@@ -104,10 +104,16 @@ class Edge:
         return f"Edge(deps={self.deps}, color={self.color}, " \
                f"legend={self.legend})"
 
-    def set_color(self, color: str):
+    # return self for chaining setters
+    def set_edge_color(self, color: str):
         self.color = color
         return self
 
-    def set_legend(self, legend: str):
+    def set_edge_legend(self, legend: str):
         self.legend = legend
+        return self
+
+    def set_node_color(self, color: str):
+        for node in self.deps.nodes:
+            node.color = color
         return self

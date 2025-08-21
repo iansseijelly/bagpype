@@ -3,17 +3,16 @@ from bagpipe.pipeline import Pipeline
 
 
 def main():
-    print("Hello from bagpipe!")
     p = Pipeline()
+    start = 0
     p += (i0 := Op("add x1, x2, x3"))
     p += (i1 := Op("orr x4, x5, x6"))
     p += (i2 := Op("b.eq"))
-    i0.D(1, "pink"), i0.E(2), i0.C(3)
-    i1.D(2), i1.E(3), i1.C(4)
-    i2.D(3), i2.E(4), i2.C(5)
-    p += Edge(i0.D >> i1.D >> i1.E >> i1.C).set_color("red")
-    p += Edge(i1.D >> i2.D >> i2.E >> i2.C).set_color("blue")
-
+    i0.D(start + 0), i0.E(start + 1), i0.C(start + 2)
+    i1.D(start + 1), i1.E(start + 2), i1.C(start + 3)
+    i2.D(start + 2), i2.E(start + 3), i2.C(start + 4)
+    p += Edge(i0.D >> i1.D >> i2.D, "red", "in-order-dispatch").set_node_color("pink")
+    p += Edge(i0.E >> i1.E, "blue", "data-dependency").set_node_color("lightblue")
     p.draw()
 
 
