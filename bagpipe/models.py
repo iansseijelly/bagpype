@@ -2,7 +2,7 @@
 Core model classes for the Bagpipe library.
 
 This module contains the main classes that users interact with:
-Pipeline, Op, Node, and Chain.
+Op, Node, and NodeList.
 """
 
 from typing import List
@@ -19,14 +19,14 @@ class Node:
 
     def __rshift__(self, other):
         """Support for '>>' syntax: node1 >> node2 creates a chain"""
-        if isinstance(other, Chain):
+        if isinstance(other, NodeList):
             print(f"chaining node {self} with edge {other}")
-            edge = Chain([self] + other.nodes)
+            edge = NodeList([self] + other.nodes)
         elif isinstance(other, Node):
             print(f"chaining node {self} with node {other}")
-            edge = Chain([self, other])
+            edge = NodeList([self, other])
         else:
-            raise TypeError(f"Chaining nodes with invalid type: {type(other)}")
+            raise TypeError(f"Connecting nodes with invalid type: {type(other)}")
 
         return edge
 
@@ -61,26 +61,26 @@ class Op:
         return self
 
 
-class Chain:
+class NodeList:
     # a linked list of nodes
     def __init__(self, nodes):
         self.nodes = nodes
 
     def __rshift__(self, other):
         """Support for '->' syntax: node1 >> node2 creates an edge"""
-        if isinstance(other, Chain):
+        if isinstance(other, NodeList):
             print(f"chaining edge {self} with edge {other}")
-            edge = Chain(self.nodes + other.nodes)
+            edge = NodeList(self.nodes + other.nodes)
         elif isinstance(other, Node):
             print(f"chaining edge {self} with node {other}")
-            edge = Chain(self.nodes + [other])
+            edge = NodeList(self.nodes + [other])
         else:
-            raise TypeError(f"Chaining edges with invalid type: {type(other)}")
+            raise TypeError(f"NodeListing edges with invalid type: {type(other)}")
 
         return edge
 
     def __eq__(self, other):
-        if not isinstance(other, Chain):
+        if not isinstance(other, NodeList):
             return False
         return self.nodes == other.nodes
 
@@ -89,8 +89,8 @@ class Chain:
 
 
 class Edge:
-    def __init__(self, deps: Chain | List[Node], color: str, legend: str = ""):
-        self.deps = deps if isinstance(deps, Chain) else Chain(deps)
+    def __init__(self, deps: NodeList | List[Node], color: str = "black", legend: str = ""):
+        self.deps = deps if isinstance(deps, NodeList) else NodeList(deps)
         self.color = color
         self.legend = legend
 
@@ -105,28 +105,10 @@ class Edge:
         return f"Edge(deps={self.deps}, color={self.color}, " \
                f"legend={self.legend})"
 
-
-class Pipeline:
-    def __init__(self):
-        self.instructions = []
-        self.edges = []
-
-    def __add__(self, other):
-        if isinstance(other, Op):
-            self.instructions.append(other)
-        elif isinstance(other, Edge):
-            self.edges.append(other)
-        else:
-            raise TypeError(f"Adding invalid type: {type(other)}")
+    def set_color(self, color: str):
+        self.color = color
         return self
 
-    def add_op(self, op: Op):
-        self.instructions.append(op)
+    def set_legend(self, legend: str):
+        self.legend = legend
         return self
-
-    def add_edge(self, edge: Edge):
-        self.edges.append(edge)
-        return self
-
-    def draw(self):
-        pass

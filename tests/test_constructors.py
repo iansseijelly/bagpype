@@ -1,7 +1,8 @@
 """
 Unit tests for the Bagpipe library.
 """
-from bagpipe.models import Op, Node, Pipeline, Edge
+from bagpipe.models import Op, Node, Edge
+from bagpipe.pipeline import Pipeline
 
 
 class TestOp:
@@ -55,7 +56,7 @@ class TestEdge:
         p = Pipeline()
         p += (i0 := Op("add x1, x2, x3"))
         p += (i1 := Op("orr x4, x5, x6"))
-        p += Edge(i0.d(1) >> i1.d(2) >> i1.c(3), "red")
+        p += Edge(i0.d(1) >> i1.d(2) >> i1.c(3)).set_color("red")
         assert p.edges == [Edge(i0.d >> i1.d >> i1.c, "red")]
         p.draw()
 
