@@ -17,10 +17,10 @@ import bagpype as bp
 p = bp.Pipeline()
 
 # Add instructions (operations)
-p += (i := Op("add x1, x2, x3"))
+p += (i := bp.Op("add x1, x2, x3"))
 
 # Add edge and nodes 
-p += Edge(i.IF(0) >> i.DE(1) >> i.EX(2) >> i.WB(3), "red", "simple_pipeline").set_node_color("violet")
+p += bp.Edge(i.IF(0) >> i.DE(1) >> i.EX(2) >> i.WB(3), "red", "simple_pipeline").set_node_color("violet")
 
 # Visualize the pipeline
 p.draw()
