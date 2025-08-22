@@ -130,7 +130,7 @@ This produces the follwing diagram:
 
 ## Requirements
 
-- Python ≥ 3.13
+- Python ≥ 3.10
 - matplotlib ≥ 3.7.0
 - seaborn ≥ 0.12.0
 
