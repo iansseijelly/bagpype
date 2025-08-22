@@ -49,7 +49,7 @@ class PipelineRenderer:
         """Helper function to get the y-coordinate of a node."""
         return len(self.parent_pipeline.ops) - self.parent_pipeline.get_idx_by_op(node.parent_op)
 
-    def draw_pipeline(self):
+    def draw_pipeline(self, show: bool = False):
         """Draw the pipeline."""
         fig, ax = plt.subplots(figsize=self.config.figsize)
         total_ops = len(self.parent_pipeline.ops)
@@ -152,4 +152,6 @@ class PipelineRenderer:
             ax.add_artist(legend)
 
         plt.tight_layout()
-        plt.show()
+        if show:
+            plt.show()
+        return fig, ax

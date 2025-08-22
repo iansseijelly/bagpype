@@ -34,9 +34,13 @@ class Pipeline:
         self.edges.append(edge)
         return self
 
-    def draw(self):
+    def draw(self, save: bool = False, filename: str = "pipeline.png"):
         self.renderer.prep_plt()
-        self.renderer.draw_pipeline()
+        show = not save
+        fig, ax = self.renderer.draw_pipeline(show)
+        if save:
+            fig.savefig(filename)
+        return fig, ax
 
     def get_idx_by_op(self, op: Op) -> int:
         return self.ops.index(op)
