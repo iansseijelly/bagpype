@@ -105,29 +105,28 @@ This example demonstrates why we might want to use a DSL to describe the pipelin
 ```python
 from bagpipe import Pipeline, Op, Edge
 
-p = Pipeline()
+p = bp.Pipeline()
 
 # Three instructions
-insns = [Op("add x1, x2, x3"),
-         Op("sub x4, x1, x5"),  # depends on x1 from i0
-         Op("mul x6, x4, x7")]  # depends on x4 from i1
+insns = [bp.Op("addi x1, x1, x3"),
+            bp.Op("sub x4, x1, x5"),  # depends on x1 from i0
+            bp.Op("mul x6, x4, x7")]  # depends on x4 from i1
 
 # Normal pipeline stages
 for i, op in enumerate(insns):
-    op.fetch(i)
-    op.decode(i + 1)
-    op.execute(i + 3)
-    op.writeback(i + 4)
+    op.IF(i + 1)
+    op.DE(i + 2)
+    op.EX(2 * i + 3)
+    op.WB(2 * i + 4)
     p += op
 
-# Data hazard: i1 needs result from i0
-p += Edge(i[0].writeback >> i[1].execute).set_edge_color("red").set_edge_legend("data hazard")
+for i in range(len(insns) - 1):
+    p += bp.Edge(insns[i].WB >> insns[i + 1].EX, "red").set_node_color("pink")
 
-# Another data hazard: i2 needs result from i1  
-p += Edge(i[1].writeback >> i[2].execute).set_edge_color("red")
-
-p.draw(save=True, filename="hazard_example.png")
+p.draw()
 ```
+This produces the follwing diagram:
+![programmatically generated diagram](assets/program.png)
 
 ## Requirements
 
