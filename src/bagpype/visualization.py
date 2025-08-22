@@ -59,8 +59,8 @@ class PipelineRenderer:
             for k, v in op.nodes.items():
                 x = v.time
                 y = total_ops - i
-                ax.scatter(x, y, marker="s", s=3000, color=v.color,
-                           edgecolors="black", alpha=0.6, linewidths=1.5)
+                ax.scatter(x, y, marker="s", s=3000, color=v.style.color,
+                           edgecolors="black", alpha=0.6, linewidths=1.5, linestyle=v.style.linestyle)
                 ax.text(x, y, k, ha="center", va="center", fontweight="bold")
                 self.vis_nodes_x.append(x)
 
@@ -108,10 +108,11 @@ class PipelineRenderer:
                     arrow = FancyArrowPatch(
                         path=path,
                         arrowstyle="-|>",
-                        color=edge.color,
+                        color=edge.style.color,
                         alpha=0.5,
                         lw=2,
                         mutation_scale=14,
+                        linestyle=edge.style.linestyle,
                     )
                 # curved edges
                 elif self.config.edge_routing == "curved":
@@ -119,11 +120,12 @@ class PipelineRenderer:
                         (sx, sy),
                         (tx, ty),
                         arrowstyle="-|>",
-                        color=edge.color,
+                        color=edge.style.color,
                         alpha=0.5,
                         lw=2,
                         mutation_scale=14,
                         connectionstyle="arc3,rad=0.15",
+                        linestyle=edge.style.linestyle,
                     )
                 else:
                     raise ValueError(f"Invalid edge_routing type: {self.config.edge_routing}")
@@ -135,7 +137,7 @@ class PipelineRenderer:
         edge_color_legend_pairs = {}
         for edge in self.parent_pipeline.edges:
             if edge.has_legend():  # only include edges with non-empty legend
-                edge_color_legend_pairs[edge.legend] = edge.color
+                edge_color_legend_pairs[edge.legend] = edge.style.color
         # create legend handles and labels
         if edge_color_legend_pairs:
             handles = []
@@ -143,7 +145,7 @@ class PipelineRenderer:
             for legend_text, color in edge_color_legend_pairs.items():
                 # create a Line2D object for the legend handle
                 from matplotlib.lines import Line2D
-                handle = Line2D([0], [0], color=color, lw=2, alpha=0.5)
+                handle = Line2D([0], [0], color=color, lw=2, alpha=0.5, linestyle=edge.style.linestyle)
                 handles.append(handle)
                 labels.append(legend_text)
 

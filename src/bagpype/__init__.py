@@ -8,7 +8,7 @@ processor pipeline diagrams using matplotlib.
 __version__ = "0.1.0"
 
 # Import main classes for easy access
-from .models import Op, Node, Edge, NodeList
+from .models import Op, Node, Edge, NodeList, NodeStyle, EdgeStyle
 from .pipeline import Pipeline
 
 __all__ = [
@@ -17,4 +17,6 @@ __all__ = [
     "Node",
     "Edge",
     "NodeList",
+    "NodeStyle",
+    "EdgeStyle",
 ]

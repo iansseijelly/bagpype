@@ -8,11 +8,17 @@ Op, Node, and NodeList.
 from typing import List
 
 
+class NodeStyle:
+    def __init__(self, color: str = "white", linestyle: str = "-"):
+        self.color = color
+        self.linestyle = linestyle
+
+
 class Node:
-    def __init__(self, label: str, time: int, color: str = "white"):
+    def __init__(self, label: str, time: int, style: NodeStyle = NodeStyle()):
         self.label = label
         self.time = time
-        self.color = color
+        self.style = style
         # parent op is set and maintained by the Op class
 
     def __repr__(self):
@@ -34,7 +40,6 @@ class Node:
             return False
         return (self.label == other.label and
                 self.time == other.time and
-                self.color == other.color and
                 self.parent_op == other.parent_op)
 
 
@@ -87,35 +92,44 @@ class NodeList:
         return " >> ".join(map(str, self.nodes))
 
 
-class Edge:
-    def __init__(self, deps: NodeList | List[Node], color: str = "black", legend: str = ""):
-        self.deps = deps if isinstance(deps, NodeList) else NodeList(deps)
+class EdgeStyle:
+    def __init__(self, color: str = "black", linestyle: str = "-"):
         self.color = color
+        self.linestyle = linestyle
+
+
+class Edge:
+    def __init__(self, deps: NodeList | List[Node], style: EdgeStyle = EdgeStyle(), legend: str = ""):
+        self.deps = deps if isinstance(deps, NodeList) else NodeList(deps)
+        self.style = style
         self.legend = legend
 
     def __eq__(self, other):
         if not isinstance(other, Edge):
             return False
         return (self.deps == other.deps and
-                self.color == other.color and
+                self.style == other.style and
                 self.legend == other.legend)
 
     def __repr__(self):
-        return f"Edge(deps={self.deps}, color={self.color}, " \
+        return f"Edge(deps={self.deps}, style={self.style}, " \
                f"legend={self.legend})"
 
     # return self for chaining setters
     def set_edge_color(self, color: str):
-        self.color = color
+        self.style.color = color
         return self
 
     def set_edge_legend(self, legend: str):
         self.legend = legend
         return self
 
-    def set_node_color(self, color: str):
+    def set_node_color(self, color: str, overwrite: bool = False):
         for node in self.deps.nodes:
-            node.color = color
+            if overwrite:
+                node.style.color = color
+            else:
+                node.style.color = color if node.style.color == "white" else node.style.color
         return self
 
     def has_legend(self):
