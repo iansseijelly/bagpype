@@ -18,17 +18,16 @@ from bagpipe.models import Node
 class RenderConfig:
     figsize: Tuple[float, float] = (12, 8)
     style: str = "whitegrid"
-    routing: str = "curved"
+    edge_routing: str = "curved"  # orthogonal or curved
     filename: Optional[str] = None
     font_size: int = 16
     font_family: str = "DejaVu Sans"
     y_label_font_size: int = 12
     x_label_font_size: int = 16
-    edge_center_offset: float = 0
 
 
 class PipelineRenderer:
-    """Renders pipeline diagrams with intelligent edge routing and professional styling."""
+    """Renders pipeline diagrams with intelligent edge edge_routing and professional styling."""
 
     def __init__(self, config: RenderConfig = RenderConfig()):
         """Initialize renderer with a pipeline instance.
@@ -96,13 +95,13 @@ class PipelineRenderer:
                 n1 = deps[i]
                 n2 = deps[i + 1]
 
-                sx = n1.time + self.config.edge_center_offset
-                sy = self.get_y_from_node(n1) - self.config.edge_center_offset
-                tx = n2.time - self.config.edge_center_offset
-                ty = self.get_y_from_node(n2) - self.config.edge_center_offset
+                sx = n1.time
+                sy = self.get_y_from_node(n1)
+                tx = n2.time
+                ty = self.get_y_from_node(n2)
 
                 # orthogonal edges
-                if self.config.routing == "orthogonal":
+                if self.config.edge_routing == "orthogonal":
                     verts = [(sx, sy), (tx, sy), (tx, ty)]
                     codes = [Path.MOVETO, Path.LINETO, Path.LINETO]
                     path = Path(verts, codes)
@@ -115,11 +114,11 @@ class PipelineRenderer:
                         mutation_scale=14,
                     )
                 # curved edges
-                elif self.config.routing == "curved":
+                elif self.config.edge_routing == "curved":
                     arrow = FancyArrowPatch(
                         (sx, sy),
                         (tx, ty),
-                        arrowstyle="->",
+                        arrowstyle="-|>",
                         color=edge.color,
                         alpha=0.5,
                         lw=2,
@@ -127,9 +126,30 @@ class PipelineRenderer:
                         connectionstyle="arc3,rad=0.15",
                     )
                 else:
-                    raise ValueError(f"Invalid routing type: {self.config.routing}")
+                    raise ValueError(f"Invalid edge_routing type: {self.config.edge_routing}")
 
                 ax.add_patch(arrow)
+
+        # add legend
+        # collect all edge color-legend pairs for edges with non-empty legends
+        edge_color_legend_pairs = {}
+        for edge in self.parent_pipeline.edges:
+            if edge.has_legend():  # only include edges with non-empty legend
+                edge_color_legend_pairs[edge.legend] = edge.color
+        # create legend handles and labels
+        if edge_color_legend_pairs:
+            handles = []
+            labels = []
+            for legend_text, color in edge_color_legend_pairs.items():
+                # create a Line2D object for the legend handle
+                from matplotlib.lines import Line2D
+                handle = Line2D([0], [0], color=color, lw=2, alpha=0.5)
+                handles.append(handle)
+                labels.append(legend_text)
+
+            # create and add the legend
+            legend = ax.legend(handles, labels, loc='best', fontsize=self.config.y_label_font_size)
+            ax.add_artist(legend)
 
         plt.tight_layout()
         plt.show()

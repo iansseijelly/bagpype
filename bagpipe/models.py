@@ -117,3 +117,6 @@ class Edge:
         for node in self.deps.nodes:
             node.color = color
         return self
+
+    def has_legend(self):
+        return self.legend != ""
