@@ -34,7 +34,7 @@ def example_program():
     p = bp.Pipeline()
 
     # Three instructions
-    insns = [bp.Op("addi x1, x1, x3"),
+    insns = [bp.Op("add x1, x1, x3"),
              bp.Op("sub x4, x1, x5"),  # depends on x1 from i0
              bp.Op("mul x6, x4, x7")]  # depends on x4 from i1
 
