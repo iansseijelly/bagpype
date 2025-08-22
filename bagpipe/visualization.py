@@ -59,7 +59,7 @@ class PipelineRenderer:
             for k, v in op.nodes.items():
                 x = v.time
                 y = total_ops - i
-                ax.scatter(x, y, marker="s", s=2400, color=v.color,
+                ax.scatter(x, y, marker="s", s=3000, color=v.color,
                            edgecolors="black", alpha=0.6, linewidths=1.5)
                 ax.text(x, y, k, ha="center", va="center", fontweight="bold")
                 self.vis_nodes_x.append(x)
@@ -73,7 +73,7 @@ class PipelineRenderer:
 
         # add y-labels in the middle of the y-ticks
         for i in range(total_ops):
-            ax.text(-0.6, y_ticks[i]-0.5, f"op{i} - {self.parent_pipeline.ops[i].label}",
+            ax.text(-0.6, y_ticks[i]-0.5, self.parent_pipeline.ops[i].label,
                     ha="right", va="center", fontsize=self.config.y_label_font_size)
 
         # prepare x-ticks
