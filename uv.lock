@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.13"
 
 [[package]]
-name = "bagpipe"
+name = "bagpype"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

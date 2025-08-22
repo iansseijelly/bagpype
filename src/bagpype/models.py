@@ -1,5 +1,5 @@
 """
-Core model classes for the Bagpipe library.
+Core model classes for the Bagpype library.
 
 This module contains the main classes that users interact with:
 Op, Node, and NodeList.

@@ -1,4 +1,4 @@
-import bagpipe as bp
+import bagpype as bp
 
 
 def example_simple():
@@ -13,7 +13,7 @@ def example_simple():
     p += bp.Edge(i.IF(0) >> i.DE(1) >> i.EX(2) >> i.WB(3), "purple", "simple_pipeline").set_node_color("violet")
 
     # Visualize the pipeline
-    p.draw(save=True, filename="simple.png")
+    p.draw()
 
 
 def example_DEC():

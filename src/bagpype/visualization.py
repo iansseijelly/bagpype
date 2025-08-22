@@ -11,7 +11,7 @@ from matplotlib.patches import FancyArrowPatch
 from matplotlib.path import Path
 import seaborn as sns
 
-from bagpipe.models import Node
+from bagpype.models import Node
 
 
 @dataclass

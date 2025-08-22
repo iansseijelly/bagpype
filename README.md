@@ -1,17 +1,17 @@
-# Bagpipe: Better Academic Graphs for Processor Pipelines
+# Bagpype: Better Academic Graphs for Processor Pipelines
 
 A Python library for describing and visualizing processor pipeline diagrams with a clean, intuitive syntax.
 
 ## Installation
 
 ```bash
-pip install bagpipe
+pip install bagpype
 ```
 
 ## Quick Start
 
 ```python
-import bagpipe as bp
+import bagpype as bp
 
 # Create a pipeline
 p = bp.Pipeline()
@@ -103,7 +103,7 @@ p += Edge(i0.writeback >> i2.fetch).set_edge_color("blue").set_edge_legend("cont
 This example demonstrates why we might want to use a DSL to describe the pipeline. 
 
 ```python
-from bagpipe import Pipeline, Op, Edge
+from bagpype import Pipeline, Op, Edge
 
 p = bp.Pipeline()
 

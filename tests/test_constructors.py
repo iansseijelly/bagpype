@@ -1,8 +1,8 @@
 """
-Unit tests for the Bagpipe library.
+Unit tests for the Bagpype library.
 """
-from bagpipe.models import Op, Node, Edge
-from bagpipe.pipeline import Pipeline
+from bagpype.models import Op, Node, Edge
+from bagpype.pipeline import Pipeline
 
 
 class TestOp:

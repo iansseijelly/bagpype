@@ -1,5 +1,5 @@
 """
-Top-level pipeline classes for the Bagpipe library.
+Top-level pipeline classes for the Bagpype library.
 
 This module collects user-level specification from models.py
 and combines with the visualization-level specification from visualization.py
